@@ -22,6 +22,7 @@
 	},
 	"dependencies": {
 		"dayjs": "^1.11.10",
+		"mongoose": "^8.4.4",
 		"morgan": "^1.10.0",
 		"react": "^18.2.0",
 		"react-dom": "^18.2.0",
