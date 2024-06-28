@@ -1,46 +1,90 @@
-import { IFlashcard, INewFlashcard, IPatchFlashcard } from '../../../src/shared/interfaces';
-import { getDb, getSuuid } from './dbtools';
+import {
+	IFlashcard,
+	IMongoFlashcard,
+	INewFlashcard,
+	IPatchFlashcard,
+} from "../../../src/shared/interfaces";
+import { getDb, getSuuid } from "./dbtools";
+// import { Flashcard } from "../schemas/flashcardSchema";
 
 const db = await getDb();
 
-export const getAllFlashcards = () => {
+export const getAllFlashcardsOLD = () => {
 	if (db === null) {
-		throw new Error('ERROR: database does not exist');
+		throw new Error("ERROR: database does not exist");
 	}
 	return db.data.flashcards;
+};
+
+export const getAllFlashcards = () => {
+	return new Promise<IMongoFlashcard[]>((resolve) => {
+		(async () => {
+			const flashcards = [
+				{
+					"_id": "111",
+					"suuid": "2Rz81V",
+					"category": "linux",
+					"front": "find out the current directory",
+					"back": "pwd"
+				},
+				{
+					"_id": "222",
+					"suuid": "82Js23",
+					"category": "linux",
+					"front": "how to find out your Linux shell",
+					"back": "echo $0"
+				},
+			]
+			// const flashcards = await Flashcard.find();
+			resolve(flashcards);
+		})();
+	})
+
 }
+// if (db === null) {
+// 	throw new Error("ERROR: database does not exist");
+// }
+// try {
+// 	const flashcards = await Flashcard.find();
+// 	res.json(flashcards);
+// } catch (error) {
+// 	handleError(res, error);
+// }
+// };
 
 export const getOneFlashcard = (suuid: string) => {
 	if (db === null) {
-		throw new Error('ERROR: database does not exist');
+		throw new Error("ERROR: database does not exist");
 	}
-	const flashcard = db.data.flashcards.find(m => m.suuid === suuid);
+	const flashcard = db.data.flashcards.find((m) => m.suuid === suuid);
 
 	if (flashcard) {
 		return flashcard;
 	} else {
 		return null;
 	}
-}
+};
 
 export const addFlashcard = async (newFlashcard: INewFlashcard) => {
 	if (db === null) {
-		throw new Error('ERROR: database does not exist');
+		throw new Error("ERROR: database does not exist");
 	}
 	const flashcard: IFlashcard = {
 		suuid: getSuuid(),
-		...newFlashcard
-	}
+		...newFlashcard,
+	};
 	db.data.flashcards.unshift(flashcard);
 	await db.write();
 	return flashcard;
-}
+};
 
 export const replaceFlashcard = async (replacementFlashcard: IFlashcard) => {
 	if (db === null) {
-		throw new Error('ERROR: database does not exist');
+		throw new Error("ERROR: database does not exist");
 	}
-	const formerFlashcard = db.data.flashcards.find(m => m.suuid === replacementFlashcard.suuid);
+	const formerFlashcard = db.data.flashcards.find(
+		(m) => m.suuid === replacementFlashcard.suuid
+	);
 	if (formerFlashcard) {
 		formerFlashcard.category = replacementFlashcard.category;
 		formerFlashcard.front = replacementFlashcard.front;
@@ -50,15 +94,19 @@ export const replaceFlashcard = async (replacementFlashcard: IFlashcard) => {
 	} else {
 		return null;
 	}
-}
+};
 
-export const replaceSomeFieldsInFlashcard = async (suuid: string, patchFlashcard: IPatchFlashcard) => {
+export const replaceSomeFieldsInFlashcard = async (
+	suuid: string,
+	patchFlashcard: IPatchFlashcard
+) => {
 	if (db === null) {
-		throw new Error('ERROR: database does not exist');
+		throw new Error("ERROR: database does not exist");
 	}
-	const formerFlashcard = db.data.flashcards.find(m => m.suuid === suuid);
+	const formerFlashcard = db.data.flashcards.find((m) => m.suuid === suuid);
 	if (formerFlashcard) {
-		if (patchFlashcard.category) formerFlashcard.category = patchFlashcard.category;
+		if (patchFlashcard.category)
+			formerFlashcard.category = patchFlashcard.category;
 		if (patchFlashcard.front) formerFlashcard.front = patchFlashcard.front;
 		if (patchFlashcard.back) formerFlashcard.back = patchFlashcard.back;
 		await db.write();
@@ -66,14 +114,16 @@ export const replaceSomeFieldsInFlashcard = async (suuid: string, patchFlashcard
 	} else {
 		return null;
 	}
-}
+};
 
 export const deleteFlashcard = async (suuid: string) => {
 	if (db === null) {
-		throw new Error('ERROR: database does not exist');
+		throw new Error("ERROR: database does not exist");
 	}
-	const flashcard = db.data.flashcards.find(m => m.suuid === suuid);
-	const indexToRemove = db.data.flashcards.findIndex(item => item.suuid === suuid);
+	const flashcard = db.data.flashcards.find((m) => m.suuid === suuid);
+	const indexToRemove = db.data.flashcards.findIndex(
+		(item) => item.suuid === suuid
+	);
 	if (indexToRemove !== -1) {
 		db.data.flashcards.splice(indexToRemove, 1);
 	}
@@ -84,4 +134,4 @@ export const deleteFlashcard = async (suuid: string) => {
 	} else {
 		return null;
 	}
-}
+};

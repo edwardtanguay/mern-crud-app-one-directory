@@ -1,3 +1,12 @@
+export interface IMongoFlashcard {
+	_id: string;
+	suuid: string;
+	category: string;
+	front: string
+	back: string;
+}
+
+
 export interface INewFlashcard {
 	category: string;
 	front: string
